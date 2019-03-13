@@ -9,15 +9,47 @@ namespace CGL {
 
 bool BBox::intersect(const Ray& r, double& t0, double& t1) const {
 
-  // TODO (Part 2.2):
-  // Implement ray - bounding box intersection test
-  // If the ray intersected the bouding box within the range given by
-  // t0, t1, update t0 and t1 with the new intersection times.
+    // TODO (Part 2.2):
+    // Implement ray - bounding box intersection test
+    // If the ray intersected the bouding box within the range given by
+    // t0, t1, update t0 and t1 with the new intersection times.
 
-  
-  return false;
 
-  
+    double txmin, txmax, tymin, tymax, tzmin, tzmax;
+
+    txmin = (min.x - r.o.x) / r.d.x;
+    txmax = (max.x - r.o.x) / r.d.x;
+    tymin = (min.y - r.o.y) / r.d.y;
+    tymax = (max.y - r.o.y) / r.d.y;
+    tzmin = (min.z - r.o.z) / r.d.z;
+    tzmax = (max.z - r.o.z) / r.d.z;
+    if (txmin > txmax)
+        std::swap(txmin, txmax);
+    if (tymin > tymax)
+        std::swap(tymin, tymax);
+    if (tzmin > tzmax)
+        std::swap(tzmin, tzmax);
+    if(tymin > txmax || txmin > tymax){
+        return false;
+    }
+    if(tymin > tzmax || tzmin > tymax){
+        return false;
+    }
+    if(txmin > tzmax || tzmin > txmax){
+        return false;
+    }
+    double tminmiddle = std::max(txmin, tymin);
+    double tmaxmiddle = std::min(txmax, tymax);
+    txmin = std::max(tminmiddle, tzmin);
+    txmax = std::min(tmaxmiddle, tzmax);
+    if (txmin <= txmax && txmax >= 0) {
+        t0 = txmin;
+        t1 = txmax;
+        return true;
+    } else {
+        return false;
+    }
+
 }
 
 void BBox::draw(Color c, float alpha) const {
